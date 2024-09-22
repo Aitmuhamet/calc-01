@@ -2,10 +2,14 @@
   <div class="circle">
     <div class="calc">
       <div class="calc__display">
-        <div
-          ref="editableDiv"
-          class="calc__input"
-        >
+        <div class="calc__input">
+          <span
+            v-for="symb in displaySymbols"
+            :key="symb.id"
+            :class="{ calc__sign: isNaN(symb) }"
+          >
+            {{ symb }}
+          </span>
         </div>
 
         <div class="calc__result">
@@ -20,14 +24,34 @@
 
       </div>
 
-      <div class="calc__numbers-list">
-        <base-button
-          v-for="(btn, index) in buttons"
-          :key="index"
-          :buttonSymbol="btn.buttonSymbol"
-          :expressionSymbol="btn.expressionSymbol"
-          :btnMethod="btn.method"
-        ></base-button>
+      <div class="calc-btn__list">
+        <div class="calc-btn__group utilityButtons">
+          <base-button
+            v-for="(btn, index) in utilityButtons"
+            :key="index"
+            :buttonSymbol="btn.buttonSymbol"
+            :expressionSymbol="btn.expressionSymbol"
+            :btnMethod="btn.handleBtnClick"
+          ></base-button>
+        </div>
+        <div class="calc-btn__group numericButtons">
+          <base-button
+            v-for="(btn, index) in numericButtons"
+            :key="index"
+            :buttonSymbol="btn.buttonSymbol"
+            :expressionSymbol="btn.expressionSymbol"
+            :btnMethod="btn.handleBtnClick"
+          ></base-button>
+        </div>
+        <div class="calc-btn__group operationButtons">
+          <base-button
+            v-for="(btn, index) in operationButtons"
+            :key="index"
+            :buttonSymbol="btn.buttonSymbol"
+            :expressionSymbol="btn.expressionSymbol"
+            :btnMethod="btn.handleBtnClick"
+          ></base-button>
+        </div>
       </div>
 
     </div>
@@ -42,188 +66,194 @@ export default {
     return {
       displaySymbols: [],
       calculationSymbols: [],
-      expressionString: '',
+      mathExpression: '',
       calculationResult: '',
-      buttons: [
+      numericButtons: [
         {
-          id: 1,
+          id: 'num-001',
           buttonSymbol: '1',
           expressionSymbol: '1',
           keyCode: 'Numpad1',
           key: '1',
           cssClasses: [],
-          method: this.handleCalcBtnClick
+          handleBtnClick: this.handleCalcBtnClick
         },
         {
-          id: 1,
+          id: 'num-002',
           buttonSymbol: '2',
           expressionSymbol: '2',
           keyCode: 'Numpad2',
           key: '2',
           cssClasses: [],
-          method: this.handleCalcBtnClick
+          handleBtnClick: this.handleCalcBtnClick
         },
         {
-          id: 1,
+          id: 'num-003',
           buttonSymbol: '3',
           expressionSymbol: '3',
           keyCode: 'Numpad3',
           key: '3',
           cssClasses: [],
-          method: this.handleCalcBtnClick
+          handleBtnClick: this.handleCalcBtnClick
         },
         {
-          id: 1,
+          id: 'num-004',
           buttonSymbol: '4',
           expressionSymbol: '4',
           keyCode: 'Numpad4',
           key: '4',
           cssClasses: [],
-          method: this.handleCalcBtnClick
+          handleBtnClick: this.handleCalcBtnClick
         },
         {
-          id: 1,
+          id: 'num-005',
           buttonSymbol: '5',
           expressionSymbol: '5',
           keyCode: 'Numpad5',
           key: '5',
           cssClasses: [],
-          method: this.handleCalcBtnClick
+          handleBtnClick: this.handleCalcBtnClick
         },
         {
-          id: 1,
+          id: 'num-006',
           buttonSymbol: '6',
           expressionSymbol: '6',
           keyCode: 'Numpad6',
           key: '6',
           cssClasses: [],
-          method: this.handleCalcBtnClick
+          handleBtnClick: this.handleCalcBtnClick
         },
         {
-          id: 1,
+          id: 'num-007',
           buttonSymbol: '7',
           expressionSymbol: '7',
           keyCode: 'Numpad7',
           key: '7',
           cssClasses: [],
-          method: this.handleCalcBtnClick
+          handleBtnClick: this.handleCalcBtnClick
         },
         {
-          id: 1,
+          id: 'num-008',
           buttonSymbol: '8',
           expressionSymbol: '8',
           keyCode: 'Numpad8',
           key: '8',
           cssClasses: [],
-          method: this.handleCalcBtnClick
+          handleBtnClick: this.handleCalcBtnClick
         },
         {
-          id: 1,
+          id: 'num-009',
           buttonSymbol: '9',
           expressionSymbol: '9',
           keyCode: 'Numpad9',
           key: '9',
           cssClasses: [],
-          method: this.handleCalcBtnClick
+          handleBtnClick: this.handleCalcBtnClick
         },
         {
-          id: 1,
+          id: '011',
           buttonSymbol: '±',
           expressionSymbol: '±',
           keyCode: '',
           key: '',
           cssClasses: [],
-          method: this.handleCalcBtnClick
+          handleBtnClick: this.handleCalcBtnClick
         },
         {
-          id: 1,
+          id: 'num-010',
           buttonSymbol: '0',
           expressionSymbol: '0',
           keyCode: 'Numpad0',
           key: '0',
           cssClasses: [],
-          method: this.handleCalcBtnClick
+          handleBtnClick: this.handleCalcBtnClick
         },
         {
-          id: 1,
+          id: '012',
           buttonSymbol: ',',
           expressionSymbol: '.',
           keyCode: 'NumpadDecimal',
           key: 'Decimal',
           cssClasses: [],
-          method: this.handleCalcBtnClick
+          handleBtnClick: this.handleCalcBtnClick
         },
+      ],
+
+      operationButtons: [
         {
-          id: 1,
-          buttonSymbol: '()',
-          expressionSymbol: '()',
-          keyCode: '',
-          key: '',
-          cssClasses: [],
-          method: this.handleCalcBtnClick
-        },
-        {
-          id: 1,
-          buttonSymbol: '%',
-          expressionSymbol: '%',
-          keyCode: '',
-          key: '',
-          cssClasses: [],
-          method: this.handleCalcBtnClick
-        },
-        {
-          id: 1,
+          id: 'op-001',
           buttonSymbol: '+',
           expressionSymbol: '+',
           keyCode: 'NumpadAdd',
           key: '+',
-          cssClasses: [],
-          method: this.handleCalcBtnClick
+          cssClasses: ['calc__sign'],
+          handleBtnClick: this.handleCalcBtnClick
         },
         {
-          id: 1,
+          id: 'op-002',
           buttonSymbol: '-',
           expressionSymbol: '-',
           keyCode: 'NumpadSubtract',
           key: '-',
-          cssClasses: [],
-          method: this.handleCalcBtnClick
+          cssClasses: ['calc__sign'],
+          handleBtnClick: this.handleCalcBtnClick
         },
         {
-          id: 1,
+          id: 'op-003',
           buttonSymbol: '×',
           expressionSymbol: '*',
           keyCode: 'NumpadMultiply',
           key: '*',
-          cssClasses: [],
-          method: this.handleCalcBtnClick
+          cssClasses: ['calc__sign'],
+          handleBtnClick: this.handleCalcBtnClick
         },
         {
-          id: 1,
+          id: 'op-004',
           buttonSymbol: '÷',
           expressionSymbol: '/',
           keyCode: 'NumpadDivide',
           key: '/',
-          cssClasses: [],
-          method: this.handleCalcBtnClick
+          cssClasses: ['calc__sign'],
+          handleBtnClick: this.handleCalcBtnClick
         },
         {
-          id: 1,
-          buttonSymbol: 'C',
-          expressionSymbol: 'C',
-          keyCode: 'Escape',
-          key: 'Escape',
-          cssClasses: [],
-          method: this.handleCalcBtnClick
-        },
-        {
-          id: 1,
+          id: 'op-005',
           buttonSymbol: '=',
           expressionSymbol: '=',
           keyCode: 'NumpadEnter',
           key: 'Enter',
           cssClasses: [],
-          method: this.handleCalcBtnClick
+          handleBtnClick: this.handleCalcBtnClick
+        },
+      ],
+
+      utilityButtons: [
+        {
+          id: 'ut-001',
+          buttonSymbol: 'C',
+          expressionSymbol: '',
+          keyCode: 'Escape',
+          key: 'Escape',
+          cssClasses: [],
+          handleBtnClick: this.clickClearButton
+        },
+        {
+          id: 'ut-002',
+          buttonSymbol: '()',
+          expressionSymbol: '()',
+          keyCode: '',
+          key: '',
+          cssClasses: [],
+          handleBtnClick: this.handleCalcBtnClick
+        },
+        {
+          id: 'ut-003',
+          buttonSymbol: '%',
+          expressionSymbol: '%',
+          keyCode: '',
+          key: '',
+          cssClasses: [],
+          handleBtnClick: this.handleCalcBtnClick
         },
 
       ],
@@ -238,34 +268,21 @@ export default {
           this.clickEquals();
           break;
 
-        case 'C':
-          this.clickClearButton();
-          break;
-
         case '()':
           this.clickParentheses();
           break;
 
         default:
-          this.addSymbolToExpressionString(symb);
+          this.addSymbolToMathExpression(symb);
           break;
       }
 
-      this.styleSpecificChars();
     },
 
-    addSymbolToExpressionString(symbol = '') {
+    addSymbolToMathExpression(symbol = '') {
       this.calculationResult = '';
       if (symbol !== '') this.displaySymbols.push(symbol);
-      this.expressionString = this.displaySymbols.join('');
-    },
-
-    styleSpecificChars() {
-      const result = this.expressionString
-        .replace(/([+\-*/×÷%])/g, '<span class="calc__sign">$1</span>')
-        .replace(/([()])/g, '<span class="highlight-parenthesis">$1</span>');
-
-      this.$refs.editableDiv.innerHTML = result;
+      this.mathExpression = this.displaySymbols.join('');
     },
 
 
@@ -276,11 +293,11 @@ export default {
     //     console.log('after preventDefault');
     //   } else {
     //     // this.displaySymbols.push(event.key)
-    //     // this.expressionString = this.displaySymbols.join('')
+    //     // this.mathExpression = this.displaySymbols.join('')
     //   }
 
     // },
-    // updateExpressionString() {
+    // updateMathExpression() {
     //   const allowedCharacters = /[0-9()+\-*/]/g;
 
     //   let currentValue = this.$refs.editableDiv.innerHTML;
@@ -288,34 +305,39 @@ export default {
     //   // Фильтрация введённого текста, оставляя только допустимые символы
     //   const filteredValue = currentValue.match(allowedCharacters)?.join('') || '';
 
-    //   // Обновление содержимого editableDiv и переменной expressionString
+    //   // Обновление содержимого editableDiv и переменной MathExpression
     //   this.$refs.editableDiv.innerHTML = filteredValue;
-    //   this.expressionString = filteredValue;
-    //   console.log(this.expressionString);
+    //   this.mathExpression = filteredValue;
+    //   console.log(this.mathExpression);
 
     // },
 
-    clickClearButton() {
+    clickClearButton(blank) {
+
       this.displaySymbols = [];
-      this.expressionString = '';
-      this.calculationResult = '';
+      this.mathExpression = blank;
+      this.calculationResult = blank;
+    },
+
+    clickEquals() {
+      this.calculationResult = eval(this.mathExpression);
     },
 
     clickBackspaceButton() {
       this.displaySymbols.pop();
-      this.expressionString = this.displaySymbols.join('');
+      this.mathExpression = this.displaySymbols.join('');
       this.handleCalcBtnClick()
     },
 
     clickParentheses() {
       if (this.isLastElementOpenParenthesis() === true) {
         this.clickBackspaceButton();
-        this.addSymbolToExpressionString(')');
+        this.addSymbolToMathExpression(')');
       } else if (this.isLastElementOpenParenthesis() === false) {
         this.clickBackspaceButton();
-        this.addSymbolToExpressionString('(');
+        this.addSymbolToMathExpression('(');
       } else {
-        this.addSymbolToExpressionString('(');
+        this.addSymbolToMathExpression('(');
       }
     },
 
@@ -327,21 +349,26 @@ export default {
       }
     },
 
-    clickEquals() {
-      this.calculationResult = eval(this.expressionString);
-    },
+    handleKeyPress(event, btn) {
+      if (event.shiftKey && btn) {
+        console.log(btn.keyCode);
+        // btn.handleBtnClick(btn.keyCode)
+      } else if (btn) {
+        btn.handleBtnClick(btn.expressionSymbol)
+      }
+    }
+
   },
   mounted() {
     document.addEventListener('keydown', (e) => {
 
-      let btn = this.buttons.find(btn => btn.key === e.key);
-      if (e.shiftKey && btn) {
-        console.log(btn.keyCode);
-        // btn.method(btn.keyCode)
-      } else if (btn) {
-        btn.method(btn.expressionSymbol)
-      }
-      
+      let btn = this.numericButtons.find(btn => btn.key === e.key);
+      this.handleKeyPress(e, btn);
+      btn = this.utilityButtons.find(btn => btn.key === e.key);
+      this.handleKeyPress(e, btn);
+      btn = this.operationButtons.find(btn => btn.key === e.key);
+      this.handleKeyPress(e, btn);
+
     })
   },
   components: {
@@ -370,14 +397,38 @@ export default {
   margin-top: 50px;
 }
 
-.calc__numbers-list {
+.calc-btn__list {
   width: 100%;
   padding: 0 15px;
 
   display: grid;
-  justify-items: center;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 10px;
+  // justify-items: center;
+  justify-content: center;
+  grid-template-areas:
+    "A A A C"
+    "B B B C"
+    "B B B C"
+    "B B B C";
+  gap: 8px 16px;
+}
+
+.calc-btn__group {
+  display: grid;
+  gap: 8px 16px;
+}
+
+.utilityButtons {
+  grid-area: A;
+  grid-template-columns: repeat(3, 1fr);
+}
+
+.numericButtons {
+  grid-area: B;
+  grid-template-columns: repeat(3, 1fr);
+}
+
+.operationButtons {
+  grid-area: C;
 }
 
 .calc__display {
