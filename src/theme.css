@@ -356,13 +356,6 @@ h3 {
 }
 
 
-.calc__input .calc__sign {
-    color: rgb(183, 127, 7);
-}
-.highlight-parenthesis {
-    color: rgb(26, 200, 109);
-}
-
 @media only screen and (max-width: 992px) {
     .container {
         max-width: 1200px;

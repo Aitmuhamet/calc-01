@@ -6,7 +6,7 @@
           <span
             v-for="symb in displaySymbols"
             :key="symb.id"
-            :class="{ calc__sign: isNaN(symb) }"
+            :class="{ 'math-operator': isMathOperator(symb) }"
           >
             {{ symb }}
           </span>
@@ -75,7 +75,7 @@ export default {
           expressionSymbol: '1',
           keyCode: 'Numpad1',
           key: '1',
-          cssClasses: [],
+          btnType: 'number',
           handleBtnClick: this.handleCalcBtnClick
         },
         {
@@ -84,7 +84,7 @@ export default {
           expressionSymbol: '2',
           keyCode: 'Numpad2',
           key: '2',
-          cssClasses: [],
+          btnType: 'number',
           handleBtnClick: this.handleCalcBtnClick
         },
         {
@@ -93,7 +93,7 @@ export default {
           expressionSymbol: '3',
           keyCode: 'Numpad3',
           key: '3',
-          cssClasses: [],
+          btnType: 'number',
           handleBtnClick: this.handleCalcBtnClick
         },
         {
@@ -102,7 +102,7 @@ export default {
           expressionSymbol: '4',
           keyCode: 'Numpad4',
           key: '4',
-          cssClasses: [],
+          btnType: 'number',
           handleBtnClick: this.handleCalcBtnClick
         },
         {
@@ -111,7 +111,7 @@ export default {
           expressionSymbol: '5',
           keyCode: 'Numpad5',
           key: '5',
-          cssClasses: [],
+          btnType: 'number',
           handleBtnClick: this.handleCalcBtnClick
         },
         {
@@ -120,7 +120,7 @@ export default {
           expressionSymbol: '6',
           keyCode: 'Numpad6',
           key: '6',
-          cssClasses: [],
+          btnType: 'number',
           handleBtnClick: this.handleCalcBtnClick
         },
         {
@@ -129,7 +129,7 @@ export default {
           expressionSymbol: '7',
           keyCode: 'Numpad7',
           key: '7',
-          cssClasses: [],
+          btnType: 'number',
           handleBtnClick: this.handleCalcBtnClick
         },
         {
@@ -138,7 +138,7 @@ export default {
           expressionSymbol: '8',
           keyCode: 'Numpad8',
           key: '8',
-          cssClasses: [],
+          btnType: 'number',
           handleBtnClick: this.handleCalcBtnClick
         },
         {
@@ -147,7 +147,7 @@ export default {
           expressionSymbol: '9',
           keyCode: 'Numpad9',
           key: '9',
-          cssClasses: [],
+          btnType: 'number',
           handleBtnClick: this.handleCalcBtnClick
         },
         {
@@ -156,7 +156,7 @@ export default {
           expressionSymbol: '±',
           keyCode: '',
           key: '',
-          cssClasses: [],
+          btnType: 'number',
           handleBtnClick: this.handleCalcBtnClick
         },
         {
@@ -165,7 +165,7 @@ export default {
           expressionSymbol: '0',
           keyCode: 'Numpad0',
           key: '0',
-          cssClasses: [],
+          btnType: 'number',
           handleBtnClick: this.handleCalcBtnClick
         },
         {
@@ -174,7 +174,7 @@ export default {
           expressionSymbol: '.',
           keyCode: 'NumpadDecimal',
           key: 'Decimal',
-          cssClasses: [],
+          btnType: 'number',
           handleBtnClick: this.handleCalcBtnClick
         },
       ],
@@ -186,7 +186,7 @@ export default {
           expressionSymbol: '+',
           keyCode: 'NumpadAdd',
           key: '+',
-          cssClasses: ['calc__sign'],
+          btnType: 'operator',
           handleBtnClick: this.handleCalcBtnClick
         },
         {
@@ -195,7 +195,7 @@ export default {
           expressionSymbol: '-',
           keyCode: 'NumpadSubtract',
           key: '-',
-          cssClasses: ['calc__sign'],
+          btnType: 'operator',
           handleBtnClick: this.handleCalcBtnClick
         },
         {
@@ -204,7 +204,7 @@ export default {
           expressionSymbol: '*',
           keyCode: 'NumpadMultiply',
           key: '*',
-          cssClasses: ['calc__sign'],
+          btnType: 'operator',
           handleBtnClick: this.handleCalcBtnClick
         },
         {
@@ -213,7 +213,7 @@ export default {
           expressionSymbol: '/',
           keyCode: 'NumpadDivide',
           key: '/',
-          cssClasses: ['calc__sign'],
+          btnType: 'operator',
           handleBtnClick: this.handleCalcBtnClick
         },
         {
@@ -222,7 +222,7 @@ export default {
           expressionSymbol: '=',
           keyCode: 'NumpadEnter',
           key: 'Enter',
-          cssClasses: [],
+          btnType: 'operator',
           handleBtnClick: this.handleCalcBtnClick
         },
       ],
@@ -234,7 +234,7 @@ export default {
           expressionSymbol: '',
           keyCode: 'Escape',
           key: 'Escape',
-          cssClasses: [],
+          btnType: 'utility',
           handleBtnClick: this.clickClearButton
         },
         {
@@ -243,7 +243,7 @@ export default {
           expressionSymbol: '()',
           keyCode: '',
           key: '',
-          cssClasses: [],
+          btnType: 'utility',
           handleBtnClick: this.handleCalcBtnClick
         },
         {
@@ -252,7 +252,7 @@ export default {
           expressionSymbol: '%',
           keyCode: '',
           key: '',
-          cssClasses: [],
+          btnType: 'utility',
           handleBtnClick: this.handleCalcBtnClick
         },
 
@@ -285,6 +285,15 @@ export default {
       this.mathExpression = this.displaySymbols.join('');
     },
 
+    isMathOperator(par) {
+      if (par.search(/[+\-*/]/i) != -1) {
+        console.log('true');
+        return true
+      } else {
+        console.log('false');
+        return false
+      }
+    },
 
     // restrictInput(event) {
     //   const allowedKeys = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', ',', '(', ')', '+', '-', '*', '/', 'Backspace', 'Enter'];
@@ -455,6 +464,10 @@ export default {
   border-bottom: 1px solid #ccc;
   padding: 5px;
   min-height: 40px;
+}
+
+.math-operator {
+    color: rgb(183, 127, 7);
 }
 
 .calc__result {
