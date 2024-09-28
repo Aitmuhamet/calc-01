@@ -3,12 +3,21 @@
     type="button"
     class="btn"
     :value="buttonSymbol"
-    @click="btnMethod(expressionSymbol)"
+    @click="btnClick()"
   >
 </template>
 
 <script>
 export default {
+  emits: {
+    'btn-click'(buttonSymbol) {
+      if (buttonSymbol) {
+        return true
+      }
+      console.warn('Нет параметра id для emit read-news')
+      return false
+    }
+  },
   props: {
     buttonSymbol: {
       type: String,
@@ -18,9 +27,11 @@ export default {
       type: String,
       required: true
     },
-    btnMethod: {
-      type: Function,
-      required: true
+  },
+  methods: {
+    btnClick() {
+      // console.log(`btnClick: ${this.buttonSymbol}`);
+      this.$emit('btn-click', this.buttonSymbol)
     }
   }
 }
