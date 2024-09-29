@@ -15,8 +15,8 @@
         <div class="calc__result">
           <span>{{ calculationResult }}</span>
         </div>
-
-        <!-- <div class="calc__result">
+<!-- 
+        <div class="calc__result">
           <span>{{ displaySymbols }}</span>
         </div> -->
 
@@ -202,7 +202,7 @@ export default {
           buttonSymbol: ',',
           expressionSymbol: '.',
           keyCode: 'NumpadDecimal',
-          key: 'Decimal',
+          key: '.',
           handleBtnClick: this.handleCalcBtnClick
         },
         {
@@ -221,7 +221,6 @@ export default {
       // console.log(`handleCalcBtnClick: ${symb}`);
 
       switch (symb) {
-
         case '±':
           this.clickParentheses();
           break;
@@ -259,6 +258,7 @@ export default {
       array.forEach(element => {
 
         switch (element) {
+
           case ',':
             this.calculationSymbols.push('.');
             break;
@@ -274,6 +274,7 @@ export default {
           default:
             this.calculationSymbols.push(element);
             break;
+
         }
       });
     },
@@ -286,42 +287,41 @@ export default {
     },
 
     clickEquals() {
-      let RegExp = /[0-9+\-*/()]/i
-      let flag = this.mathExpression.split('')
-        .find(el => RegExp.test(el));
-      // console.group('ClickEquals: ')
-      // console.log('mathExpression: ', this.mathExpression);
-      // console.log('calculationResult: ', this.calculationResult);
+      const allowedCharacters = /[.0-9+\-*/()]/gs;
+      const filteredValue = this.mathExpression
+        .match(allowedCharacters)?.join('') || '';
 
-      // console.log('flag: ', flag);
-      // console.groupEnd();
-
-      if (flag !== undefined) {
-        this.calculationResult = eval(this.mathExpression);
+      try {
+        this.calculationResult = eval(filteredValue);
+      } catch (error) {
+        alert('Использован недопустимый формат')
       }
-      // console.group('clickEqualsEnd: ')
-      // console.log(`mathExpression: ${this.mathExpression}`);
-      // console.log(`calculationResult: ${this.calculationResult}`);
-      // console.groupEnd();
     },
 
     clickBackspaceButton() {
       this.displaySymbols.pop();
-      this.mathExpression = this.calculationSymbols.join('');
     },
 
     clickParentheses() {
-      if (this.isLastElementOpenParenthesis() === true) {
+      const lastExpressionSymbol = this.getLastExpressionSymbol()
+      if (!isNaN(lastExpressionSymbol)) {
+        this.displaySymbols.push('×');
+        this.displaySymbols.push('(');
+      } else if (lastExpressionSymbol === '(') {
         this.clickBackspaceButton();
-        this.addSymbolToCalculationSymbols(')');
-      } else if (this.isLastElementOpenParenthesis() === false) {
         this.clickBackspaceButton();
-        this.addSymbolToCalculationSymbols('(');
+        this.displaySymbols.push(')')
+      } else if (lastExpressionSymbol === ')' || lastExpressionSymbol === ',') {
+        this.clickBackspaceButton();
+        this.displaySymbols.push('×')
+        this.displaySymbols.push('(')
       } else {
-        this.addSymbolToCalculationSymbols('(');
+        this.displaySymbols.push('(')
       }
     },
-
+    getLastExpressionSymbol() {
+      return this.displaySymbols[this.displaySymbols.length - 1]
+    },
     isLastElementOpenParenthesis() {
       if (this.displaySymbols[this.displaySymbols.length - 1] === '(') {
         return true
@@ -331,7 +331,7 @@ export default {
     },
 
     isMathOperator(par) {
-      if (par.search(/[+\-×÷]/i) != -1) {
+      if (par.search(/[+\-×÷,]/i) != -1) {
         return true
       } else {
         return false
@@ -348,33 +348,6 @@ export default {
       }
     },
 
-
-    // restrictInput(event) {
-    //   const allowedKeys = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', ',', '(', ')', '+', '-', '*', '/', 'Backspace', 'Enter'];
-    //   if (!allowedKeys.includes(event.key)) {
-    //     event.preventDefault();
-    //     console.log('after preventDefault');
-    //   } else {
-    //     // this.displaySymbols.push(event.key)
-    //     // this.mathExpression = this.displaySymbols.join('')
-    //   }
-
-    // },
-    // updateMathExpression() {
-    //   const allowedCharacters = /[0-9()+\-*/]/g;
-
-    //   let currentValue = this.$refs.editableDiv.innerHTML;
-
-    //   // Фильтрация введённого текста, оставляя только допустимые символы
-    //   const filteredValue = currentValue.match(allowedCharacters)?.join('') || '';
-
-    //   // Обновление содержимого editableDiv и переменной MathExpression
-    //   this.$refs.editableDiv.innerHTML = filteredValue;
-    //   this.mathExpression = filteredValue;
-    //   console.log(this.mathExpression);
-
-    // },
-
   },
   watch: {
     displaySymbols: {
@@ -387,8 +360,6 @@ export default {
   },
   mounted() {
     document.addEventListener('keydown', (e) => {
-      console.log(e.key);
-      
 
       if (e.key === 'Enter') {
         e.preventDefault(); // Останавливает отправку формы или вставку новой строки
@@ -397,14 +368,23 @@ export default {
 
       try {
         let btn = this.calcButtons.find(btn => btn.key === e.key);
-        if (btn !== undefined) {
-          this.handleKeyPress(e, btn);
+        
+
+        if (btn !== undefined && e.shiftKey && e.key === '*') {
+          this.handleCalcBtnClick('×');
+        } else if (btn !== undefined) {
+          this.handleCalcBtnClick(btn.buttonSymbol);
         } else if (e.key === 'Backspace') {
           this.handleCalcBtnClick('Backspace');
+        } else if (e.key === '(' && e.shiftKey) {
+          this.handleCalcBtnClick('(')
+        } else if (e.key === ')' && e.shiftKey) {
+          this.handleCalcBtnClick(')')
         }
+        
       } catch (error) {
         console.log(`Error: `, error);
-
+        alert('Использован недопустимый формат');
       }
     });
   },
