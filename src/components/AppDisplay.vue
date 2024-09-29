@@ -70,7 +70,7 @@ export default {
           buttonSymbol: '%',
           expressionSymbol: '%',
           keyCode: '',
-          key: '',
+          key: '%',
           handleBtnClick: this.handleCalcBtnClick
         },
         {
@@ -214,15 +214,21 @@ export default {
   },
   methods: {
     handleCalcBtnClick(symb) {
-      // console.log(`handleCalcBtnClick: ${symb}`);
 
       switch (symb) {
         case '±':
-          this.clickParentheses();
+          this.toggleSign();
           break;
 
         case '()':
           this.clickParentheses();
+          break;
+
+        case '÷':
+        case '×':
+        case '+':
+        case '-':
+          this.addOperator(symb);
           break;
 
         case 'C':
@@ -238,45 +244,12 @@ export default {
           break;
 
         default:
-          this.displaySymbols.push(symb);
+          this.addSymbolToDisplaySymbols(symb);
           break;
       }
 
     },
 
-    addSymbolToCalculationSymbols(displaySymbolsArray) {
-      this.calculationResult = '';
-      this.calculationSymbols = [];
-      let lastOperatorIndex = null;
-      // console.log('displaySymbolsArray', displaySymbolsArray.join(''));
-      displaySymbolsArray.forEach((element) => {
-
-        switch (element) {
-
-          case ',':
-            this.calculationSymbols.push('.');
-            break;
-
-          case '×':
-            this.calculationSymbols.push('*');
-            break;
-
-          case '÷':
-            this.calculationSymbols.push('/');
-            break;
-
-          case '%':
-            lastOperatorIndex = this.getLastOperatorIndex(this.calculationSymbols);
-            this.handlePercent(this.calculationSymbols, lastOperatorIndex);
-            break;
-
-          default:
-            this.calculationSymbols.push(element);
-            break;
-
-        }
-      });
-    },
     getLastOperatorIndex(array) {
       for (let j = array.length - 1; j >= 0; j--) {
         const element = array[j];
@@ -285,14 +258,14 @@ export default {
         }
       }
     },
-    getLastNumber(ind, array) {
+    getLastNumberDigits(ind, array) {
       let result = array.slice(ind + 1);
-      return result.join('');
+      return result;
     },
     handlePercent(tempArray, lastOperatorIndex) {
       const partBeforeLastOperatorArray = tempArray.slice(0, lastOperatorIndex);
       const stringLastOperator = tempArray[lastOperatorIndex];
-      const stringLastNumber = this.getLastNumber(lastOperatorIndex, tempArray);
+      const stringLastNumberDigits = this.getLastNumberDigits(lastOperatorIndex, tempArray).join('');
 
       this.calculationSymbols = [];
 
@@ -301,19 +274,19 @@ export default {
 
       if (stringLastOperator === '*') {
 
-        this.calculationSymbols.push(stringLastNumber);
+        this.calculationSymbols.push(stringLastNumberDigits);
         this.calculationSymbols.push('/100');
 
       } else if (stringLastOperator === '/') {
 
-        this.calculationSymbols.push(stringLastNumber);
+        this.calculationSymbols.push(stringLastNumberDigits);
         this.calculationSymbols.push('*100');
 
       } else if (stringLastOperator === '+' || stringLastOperator === '-') {
 
         this.pushLeftSideOfOperator(partBeforeLastOperatorArray);
         this.calculationSymbols.push('*');
-        this.calculationSymbols.push(stringLastNumber);
+        this.calculationSymbols.push(stringLastNumberDigits);
         this.calculationSymbols.push('/100');
       }
     },
@@ -332,6 +305,16 @@ export default {
 
     clickEquals() {
       const allowedCharacters = /[.0-9+\-*/()]/gs;
+
+      // while (this.isOpeningBracketsMore(this.displaySymbols)) {
+      //   this.balanceBrackets();
+      //   console.log(this.displaySymbols);
+
+      // }
+
+      // this.addSymbolToCalculationSymbols(this.displaySymbols);
+      // this.mathExpression = this.calculationSymbols.join('');
+
       const filteredValue = this.mathExpression
         .match(allowedCharacters)?.join('') || '';
 
@@ -347,22 +330,25 @@ export default {
     },
 
     clickParentheses() {
-      const lastExpressionSymbol = this.getLastExpressionSymbol()
-      if (!isNaN(lastExpressionSymbol)) {
-        if (this.isOpeningBracketsMore(this.displaySymbols)) {
-          this.displaySymbols.push(')')
-        } else {
-          this.displaySymbols.push('×')
-          this.displaySymbols.push('(')
-        }
+      const lastExpressionSymbol = this.getLastExpressionSymbol(this.displaySymbols)
+      if (
+        !isNaN(lastExpressionSymbol) ||
+        lastExpressionSymbol === ')' ||
+        lastExpressionSymbol === '%'
+      ) {
+        this.balanceBrackets();
       } else if (lastExpressionSymbol === ',') {
         this.clickBackspaceButton();
-        this.clickBackspaceButton();
-        this.displaySymbols.push(')')
-      } else if (lastExpressionSymbol === ')') {
-        this.displaySymbols.push('×')
-        this.displaySymbols.push('(')
+        this.balanceBrackets();
       } else {
+        this.displaySymbols.push('(')
+      }
+    },
+    balanceBrackets() {
+      if (this.isOpeningBracketsMore(this.displaySymbols)) {
+        this.displaySymbols.push(')')
+      } else {
+        this.displaySymbols.push('×')
         this.displaySymbols.push('(')
       }
     },
@@ -380,26 +366,86 @@ export default {
 
       return openingCount > closingCount;
     },
-    getLastExpressionSymbol() {
-      return this.displaySymbols[this.displaySymbols.length - 1]
+    getLastExpressionSymbol(array) {
+      return array[array.length - 1]
     },
 
     isMathOperator(par) {
-      if (par.search(/[+\-×÷,]/i) != -1) {
+      if (par.search(/[+\-×÷%]/i) != -1) {
         return true
       } else {
         return false
       }
     },
 
-    handleKeyPress(event, btn) {
-      if (event.shiftKey && btn) {
-        // console.log('handleKeyPress: shiftKey +', btn.keyCode);
-        // btn.handleBtnClick(btn.keyCode)
-      } else if (btn) {
-        // console.log(`handleCalcBtnClick(${btn.buttonSymbol})`);
-        this.handleCalcBtnClick(btn.buttonSymbol)
+    toggleSign() {
+      const lastOperatorIndex = this.getLastOperatorIndex(this.displaySymbols);
+
+      const partBeforeLastOperatorArray = this.displaySymbols.slice(0, lastOperatorIndex);
+      const stringLastOperator = this.displaySymbols[lastOperatorIndex];
+      const lastNumberDigitsArray = this.getLastNumberDigits(lastOperatorIndex, this.displaySymbols);
+
+      this.displaySymbols = [];
+
+      this.displaySymbols.push(...partBeforeLastOperatorArray);
+      this.displaySymbols.push(stringLastOperator);
+      this.displaySymbols.push('(');
+      this.displaySymbols.push('-');
+      this.displaySymbols.push(...lastNumberDigitsArray);
+
+    },
+    addSymbolToDisplaySymbols(symb) {
+      if (this.getLastExpressionSymbol(this.displaySymbols) === ')') {
+        this.displaySymbols.push('×')
       }
+      this.displaySymbols.push(symb)
+    },
+    addOperator(op) {
+      const lastExpressionSymbol = this.getLastExpressionSymbol(this.displaySymbols);
+
+      if (
+        lastExpressionSymbol === '÷' ||
+        lastExpressionSymbol === '×' ||
+        lastExpressionSymbol === '+' ||
+        lastExpressionSymbol === '-'
+      ) {
+        this.clickBackspaceButton();
+      }
+      this.displaySymbols.push(op);
+    },
+
+    addSymbolToCalculationSymbols(displaySymbolsArray) {
+      this.calculationResult = '';
+      this.calculationSymbols = [];
+      let lastOperatorIndex = null;
+
+      displaySymbolsArray.forEach((element) => {
+
+        switch (element) {
+
+          case ',':
+            this.calculationSymbols.push('.');
+            break;
+
+          case '×':
+            this.calculationSymbols.push('*')
+            break;
+
+          case '÷':
+            this.calculationSymbols.push('/')
+            break;
+
+          case '%':
+            lastOperatorIndex = this.getLastOperatorIndex(this.calculationSymbols);
+            this.handlePercent(this.calculationSymbols, lastOperatorIndex);
+            break;
+
+          default:
+            this.calculationSymbols.push(element);
+            break;
+
+        }
+      });
     },
 
   },
@@ -426,6 +472,8 @@ export default {
 
         if (btn !== undefined && e.shiftKey && e.key === '*') {
           this.handleCalcBtnClick('×');
+        } else if (btn !== undefined && e.shiftKey && e.key === '%') {
+          this.handleCalcBtnClick('%');
         } else if (btn !== undefined) {
           this.handleCalcBtnClick(btn.buttonSymbol);
         } else if (e.key === 'Backspace') {
