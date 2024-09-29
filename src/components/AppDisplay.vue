@@ -15,10 +15,6 @@
         <div class="calc__result">
           <span>{{ calculationResult }}</span>
         </div>
-<!-- 
-        <div class="calc__result">
-          <span>{{ displaySymbols }}</span>
-        </div> -->
 
         <button
           class="backspace"
@@ -86,27 +82,27 @@ export default {
           handleBtnClick: this.handleCalcBtnClick
         },
         {
-          id: 'num-001',
-          buttonSymbol: '1',
-          expressionSymbol: '1',
-          keyCode: 'Numpad1',
-          key: '1',
+          id: 'num-007',
+          buttonSymbol: '7',
+          expressionSymbol: '7',
+          keyCode: 'Numpad7',
+          key: '7',
           handleBtnClick: this.handleCalcBtnClick
         },
         {
-          id: 'num-002',
-          buttonSymbol: '2',
-          expressionSymbol: '2',
-          keyCode: 'Numpad2',
-          key: '2',
+          id: 'num-008',
+          buttonSymbol: '8',
+          expressionSymbol: '8',
+          keyCode: 'Numpad8',
+          key: '8',
           handleBtnClick: this.handleCalcBtnClick
         },
         {
-          id: 'num-003',
-          buttonSymbol: '3',
-          expressionSymbol: '3',
-          keyCode: 'Numpad3',
-          key: '3',
+          id: 'num-009',
+          buttonSymbol: '9',
+          expressionSymbol: '9',
+          keyCode: 'Numpad9',
+          key: '9',
           handleBtnClick: this.handleCalcBtnClick
         },
         {
@@ -150,27 +146,27 @@ export default {
           handleBtnClick: this.handleCalcBtnClick
         },
         {
-          id: 'num-007',
-          buttonSymbol: '7',
-          expressionSymbol: '7',
-          keyCode: 'Numpad7',
-          key: '7',
+          id: 'num-001',
+          buttonSymbol: '1',
+          expressionSymbol: '1',
+          keyCode: 'Numpad1',
+          key: '1',
           handleBtnClick: this.handleCalcBtnClick
         },
         {
-          id: 'num-008',
-          buttonSymbol: '8',
-          expressionSymbol: '8',
-          keyCode: 'Numpad8',
-          key: '8',
+          id: 'num-002',
+          buttonSymbol: '2',
+          expressionSymbol: '2',
+          keyCode: 'Numpad2',
+          key: '2',
           handleBtnClick: this.handleCalcBtnClick
         },
         {
-          id: 'num-009',
-          buttonSymbol: '9',
-          expressionSymbol: '9',
-          keyCode: 'Numpad9',
-          key: '9',
+          id: 'num-003',
+          buttonSymbol: '3',
+          expressionSymbol: '3',
+          keyCode: 'Numpad3',
+          key: '3',
           handleBtnClick: this.handleCalcBtnClick
         },
         {
@@ -229,10 +225,6 @@ export default {
           this.clickParentheses();
           break;
 
-        case '%':
-          this.clickParentheses();
-          break;
-
         case 'C':
           this.clickClearButton();
           break;
@@ -252,10 +244,12 @@ export default {
 
     },
 
-    addSymbolToCalculationSymbols(array) {
+    addSymbolToCalculationSymbols(displaySymbolsArray) {
       this.calculationResult = '';
       this.calculationSymbols = [];
-      array.forEach(element => {
+      let lastOperatorIndex = null;
+      // console.log('displaySymbolsArray', displaySymbolsArray.join(''));
+      displaySymbolsArray.forEach((element) => {
 
         switch (element) {
 
@@ -271,6 +265,11 @@ export default {
             this.calculationSymbols.push('/');
             break;
 
+          case '%':
+            lastOperatorIndex = this.getLastOperatorIndex(this.calculationSymbols);
+            this.handlePercent(this.calculationSymbols, lastOperatorIndex);
+            break;
+
           default:
             this.calculationSymbols.push(element);
             break;
@@ -278,7 +277,51 @@ export default {
         }
       });
     },
+    getLastOperatorIndex(array) {
+      for (let j = array.length - 1; j >= 0; j--) {
+        const element = array[j];
+        if (isNaN(element)) {
+          return j;
+        }
+      }
+    },
+    getLastNumber(ind, array) {
+      let result = array.slice(ind + 1);
+      return result.join('');
+    },
+    handlePercent(tempArray, lastOperatorIndex) {
+      const partBeforeLastOperatorArray = tempArray.slice(0, lastOperatorIndex);
+      const stringLastOperator = tempArray[lastOperatorIndex];
+      const stringLastNumber = this.getLastNumber(lastOperatorIndex, tempArray);
 
+      this.calculationSymbols = [];
+
+      this.pushLeftSideOfOperator(partBeforeLastOperatorArray);
+      this.calculationSymbols.push(stringLastOperator);
+
+      if (stringLastOperator === '*') {
+
+        this.calculationSymbols.push(stringLastNumber);
+        this.calculationSymbols.push('/100');
+
+      } else if (stringLastOperator === '/') {
+
+        this.calculationSymbols.push(stringLastNumber);
+        this.calculationSymbols.push('*100');
+
+      } else if (stringLastOperator === '+' || stringLastOperator === '-') {
+
+        this.pushLeftSideOfOperator(partBeforeLastOperatorArray);
+        this.calculationSymbols.push('*');
+        this.calculationSymbols.push(stringLastNumber);
+        this.calculationSymbols.push('/100');
+      }
+    },
+    pushLeftSideOfOperator(part) {
+      this.calculationSymbols.push('(');
+      this.calculationSymbols.push(...part);
+      this.calculationSymbols.push(')');
+    },
     clickClearButton() {
       this.displaySymbols = [];
       this.calculationSymbols = [];
@@ -368,7 +411,7 @@ export default {
 
       try {
         let btn = this.calcButtons.find(btn => btn.key === e.key);
-        
+
 
         if (btn !== undefined && e.shiftKey && e.key === '*') {
           this.handleCalcBtnClick('×');
@@ -381,7 +424,7 @@ export default {
         } else if (e.key === ')' && e.shiftKey) {
           this.handleCalcBtnClick(')')
         }
-        
+
       } catch (error) {
         console.log(`Error: `, error);
         alert('Использован недопустимый формат');
