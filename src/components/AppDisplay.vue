@@ -322,6 +322,7 @@ export default {
       this.calculationSymbols.push(...part);
       this.calculationSymbols.push(')');
     },
+
     clickClearButton() {
       this.displaySymbols = [];
       this.calculationSymbols = [];
@@ -348,29 +349,39 @@ export default {
     clickParentheses() {
       const lastExpressionSymbol = this.getLastExpressionSymbol()
       if (!isNaN(lastExpressionSymbol)) {
-        this.displaySymbols.push('×');
-        this.displaySymbols.push('(');
-      } else if (lastExpressionSymbol === '(') {
+        if (this.isOpeningBracketsMore(this.displaySymbols)) {
+          this.displaySymbols.push(')')
+        } else {
+          this.displaySymbols.push('×')
+          this.displaySymbols.push('(')
+        }
+      } else if (lastExpressionSymbol === ',') {
         this.clickBackspaceButton();
         this.clickBackspaceButton();
         this.displaySymbols.push(')')
-      } else if (lastExpressionSymbol === ')' || lastExpressionSymbol === ',') {
-        this.clickBackspaceButton();
+      } else if (lastExpressionSymbol === ')') {
         this.displaySymbols.push('×')
         this.displaySymbols.push('(')
       } else {
         this.displaySymbols.push('(')
       }
     },
+    isOpeningBracketsMore(expression) {
+      let openingCount = 0;
+      let closingCount = 0;
+
+      for (let char of expression) {
+        if (char === '(') {
+          openingCount++;
+        } else if (char === ')') {
+          closingCount++;
+        }
+      }
+
+      return openingCount > closingCount;
+    },
     getLastExpressionSymbol() {
       return this.displaySymbols[this.displaySymbols.length - 1]
-    },
-    isLastElementOpenParenthesis() {
-      if (this.displaySymbols[this.displaySymbols.length - 1] === '(') {
-        return true
-      } else if (this.displaySymbols[this.displaySymbols.length - 1] === ')') {
-        return false;
-      }
     },
 
     isMathOperator(par) {
