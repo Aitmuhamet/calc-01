@@ -2,10 +2,25 @@
 
 * {
     box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    padding: 0;
 }
+
+$btn-size: 78px;
 
 :root {
   --bgColor: #A0D7FF;
+  --btn-size: 78px;
+  --symbol-result-font-size: 18px;
+  --symbol-btn-font-size: calc(var(--symbol-result-font-size) * 1.5);
+  --btn-background: linear-gradient(130deg, rgba(255, 255, 255, 0.3) -9.69%, rgba(255, 255, 255, 0.20) 114.23%);
+  --symbol-input-color: 36, 105, 241;
+  --math-operator-color: 123, 85, 4;
+  --escape-color: 241, 36, 36;
+
+  --background-wrapper-size: 500px;
+  --color-t: rgb(241, 36, 36);
 }
 
 body {
@@ -13,10 +28,18 @@ body {
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     font-size: 16px;
+    padding: 0;
+    margin: 0;
     color: #2c3e50;
     background: var(--bgColor);
-}
 
+}
+.no-select {
+    -webkit-user-select: none; /* Chrome/Safari */
+    -moz-user-select: none; /* Firefox */
+    -ms-user-select: none; /* IE/Edge */
+    user-select: none; /* Стандартный синтаксис */
+  }
 hr {
     margin: 1rem 0;
 }
@@ -124,18 +147,7 @@ h3 {
     border-color: #c25205;
 }
 
-.container {
-    margin: 0 auto;
-    max-width: 1200px;
-    
-}
 
-.container.column {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    height: calc(100vh - 60px * 2);
-}
 
 .pt-2 {
     padding-top: 2rem;
@@ -347,15 +359,6 @@ h3 {
     right: 0;
 }
 
-.circle {
-    border-radius: 50%;
-    background: #109DFF;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-
 @media only screen and (max-width: 992px) {
     .container {
         max-width: 1200px;
@@ -380,11 +383,5 @@ h3 {
     100% {
         -webkit-transform: rotate(360deg);
         transform: rotate(360deg);
-    }
-}
-
-@media (max-width: 719.9px) {
-    .container.column {
-        height: inherit;
     }
 }
